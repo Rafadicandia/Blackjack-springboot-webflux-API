@@ -4,7 +4,6 @@ import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.exception.Insuffici
 import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.model.valueobject.PlayerBet;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.model.valueobject.PlayerId;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.model.valueobject.PlayerName;
-import lombok.Data;
 import lombok.Getter;
 
 import java.math.BigDecimal;
