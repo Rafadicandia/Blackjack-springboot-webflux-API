@@ -5,12 +5,13 @@ import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.model.valueobject.P
 import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.model.valueobject.PlayerId;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.model.valueobject.PlayerName;
 import lombok.Data;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@Data
+@Getter
 public class Player {
 
     private PlayerId id;
