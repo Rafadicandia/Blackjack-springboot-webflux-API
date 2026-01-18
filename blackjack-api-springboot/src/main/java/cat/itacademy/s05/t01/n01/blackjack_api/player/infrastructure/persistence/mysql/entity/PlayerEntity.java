@@ -7,12 +7,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 
+import java.math.BigDecimal;
+
 @Table(schema = "players")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class PlayerEntity {
+
     @Id
     private String id;
     private String name;
@@ -20,10 +23,9 @@ public class PlayerEntity {
     private Integer wins;
     private Integer losses;
     private Double winRate;
-    private Double balance;
+    private BigDecimal balance;
     private String createdAt;
     private String updatedAt;
     private String deletedAt;
-
 
 }
