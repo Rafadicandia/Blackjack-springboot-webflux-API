@@ -23,6 +23,7 @@ public class PlayerEntity {
     private Integer wins;
     private Integer losses;
     private Double winRate;
+    private Integer totalGames;
     private BigDecimal balance;
     private String createdAt;
     private String updatedAt;
