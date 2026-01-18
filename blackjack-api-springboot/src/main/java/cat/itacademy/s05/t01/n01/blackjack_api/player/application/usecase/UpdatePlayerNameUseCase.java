@@ -2,15 +2,11 @@ package cat.itacademy.s05.t01.n01.blackjack_api.player.application.usecase;
 
 import cat.itacademy.s05.t01.n01.blackjack_api.player.application.dto.ResponsePlayerDTO;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.application.exception.PlayerIdDoesNotExistsInDataBaseException;
-import cat.itacademy.s05.t01.n01.blackjack_api.player.application.exception.PlayerNameAlreadyExistsException;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.application.mapper.PlayerMapper;
-import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.model.Player;
-
 import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.model.valueobject.PlayerId;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.model.valueobject.PlayerName;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.repository.PlayerRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
