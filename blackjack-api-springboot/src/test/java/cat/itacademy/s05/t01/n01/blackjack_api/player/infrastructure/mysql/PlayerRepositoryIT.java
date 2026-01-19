@@ -7,6 +7,9 @@ import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.repository.PlayerRe
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration;
+import org.springframework.boot.mongodb.autoconfigure.MongoReactiveAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -21,11 +24,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 @Testcontainers
+@EnableAutoConfiguration(exclude = {
+        MongoAutoConfiguration.class,
+        MongoReactiveAutoConfiguration.class
+})
 class PlayerRepositoryIT {
 
+
     @Container
-    static
-    MySQLContainer mysql = new MySQLContainer("mysql:8.0");
+    static MySQLContainer mysql = new MySQLContainer("mysql:8.0")
+            .withInitScript("schema.sql");
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
@@ -40,20 +48,19 @@ class PlayerRepositoryIT {
     private PlayerRepository playerRepository;
 
     @Test
-    @DisplayName("Should save and find player by name")
-    void shouldSaveAndFindPlayerByName() {
+    @DisplayName("Should save and find player by ID")
+    void shouldSaveAndFindPlayerById() {
 
         Player player = Player.createNew(new PlayerName("TDD_Master"));
 
-        Mono<Player> saved = playerRepository.save(player)
-                .then(playerRepository.findByName(new PlayerName("TDD_Master")));
+        Mono<Player> savedAndFound = playerRepository.save(player)
+                .flatMap(savedPlayer -> playerRepository.findById(savedPlayer.getId()));
 
-        StepVerifier.create(saved)
+        StepVerifier.create(savedAndFound)
                 .assertNext(p -> {
-                    assertEquals("TDD_Master", p.getName());
+                    assertEquals("TDD_Master", p.getName().value());
                     assertNotNull(p.getId());
                 })
                 .verifyComplete();
     }
-
 }
