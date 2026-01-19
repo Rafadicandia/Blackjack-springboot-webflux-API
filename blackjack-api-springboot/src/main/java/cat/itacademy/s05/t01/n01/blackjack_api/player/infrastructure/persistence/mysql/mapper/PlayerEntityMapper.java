@@ -4,7 +4,6 @@ import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.model.Player;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.model.valueobject.PlayerId;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.model.valueobject.PlayerName;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.infrastructure.persistence.mysql.entity.PlayerEntity;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -15,16 +14,17 @@ public class PlayerEntityMapper {
 
     public PlayerEntity toEntity(Player player) {
         return PlayerEntity.builder()
-                .id(player.getId().value().toString())
+                .id(player.getId() != null ? player.getId().value().toString() : null)
                 .name(player.getName().value())
                 .wins(player.getTotalWins())
                 .losses(player.getTotalLosses())
                 .totalGames(player.getTotalGames())
                 .winRate(player.getWinRate())
                 .balance(player.getBalance())
-                .createdAt(player.getCreatedAt().toString())
-                .updatedAt(player.getUpdatedAt().toString())
-                .build();
+                .createdAt(player.getCreatedAt())
+                .updatedAt(player.getUpdatedAt())
+                .build()
+                .asNew();
     }
 
     public Player toDomain(PlayerEntity entity) {
@@ -36,9 +36,10 @@ public class PlayerEntityMapper {
                 entity.getLosses(),
                 entity.getTotalGames(),
                 entity.getWinRate(),
-                LocalDateTime.parse(entity.getCreatedAt()),
-                LocalDateTime.parse(entity.getUpdatedAt()),
+                entity.getCreatedAt(),
+                entity.getUpdatedAt(),
                 entity.getBalance()
+
         );
     }
 }
