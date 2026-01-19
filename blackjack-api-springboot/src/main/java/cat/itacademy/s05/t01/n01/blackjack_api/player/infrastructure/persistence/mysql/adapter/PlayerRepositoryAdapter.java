@@ -14,17 +14,20 @@ import reactor.core.publisher.Mono;
 @Component
 @RequiredArgsConstructor
 public class PlayerRepositoryAdapter implements PlayerRepository {
-    private final MySqlPlayerRepository springDataRepository;
+
+    private final MySqlPlayerRepository mySqlRepository;
     private final PlayerEntityMapper mapper;
 
     @Override
     public Mono<Player> save(Player player) {
-        return null;
+        return mySqlRepository.save(mapper.toEntity(player))
+                .map(mapper::toDomain);
     }
 
     @Override
     public Mono<Player> findById(PlayerId id) {
-        return null;
+        return mySqlRepository.findById(id.value().toString())
+                .map(mapper::toDomain);
     }
 
     @Override
