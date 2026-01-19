@@ -38,7 +38,7 @@ public class Player {
 
     public static Player createNew(PlayerName name) {
         LocalDateTime now = LocalDateTime.now();
-        return new Player(null, name, 0, 0, 0, 0.0, now, now, BigDecimal.ZERO);
+        return new Player(PlayerId.create(), name, 0, 0, 0, 0.0, now, now, BigDecimal.ZERO);
     }
 
 
