@@ -20,8 +20,13 @@ public class PlayerRepositoryAdapter implements PlayerRepository {
 
     @Override
     public Mono<Player> save(Player player) {
-        return mySqlRepository.save(mapper.toEntity(player))
-                .map(mapper::toDomain);
+        if (player.hasId()) {
+            return updatePlayer(player);
+        } else {
+            return mySqlRepository.save(mapper.toEntity(player))
+                    .map(mapper::toDomain);
+        }
+
     }
 
     @Override
@@ -58,5 +63,14 @@ public class PlayerRepositoryAdapter implements PlayerRepository {
     @Override
     public Mono<Void> deleteById(PlayerId id) {
         return null;
+    }
+
+    private Mono<Player> updatePlayer(Player player) {
+        return mySqlRepository.findById(player.getId().value().toString())
+                .flatMap(existingEntity -> {
+                    Player updatedPlayer = mapper.toDomain(mapper.updateEntity(existingEntity, player));
+                    return mySqlRepository.save(mapper.toEntity(updatedPlayer))
+                            .map(mapper::toDomain);
+                });
     }
 }
