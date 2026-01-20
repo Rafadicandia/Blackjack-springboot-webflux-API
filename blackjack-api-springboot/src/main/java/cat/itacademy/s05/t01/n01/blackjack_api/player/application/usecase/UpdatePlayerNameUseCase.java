@@ -1,5 +1,6 @@
 package cat.itacademy.s05.t01.n01.blackjack_api.player.application.usecase;
 
+import cat.itacademy.s05.t01.n01.blackjack_api.player.application.dto.RequestPlayerDTO;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.application.dto.ResponsePlayerDTO;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.application.exception.PlayerIdDoesNotExistsInDataBaseException;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.application.mapper.PlayerMapper;
@@ -19,11 +20,11 @@ public class UpdatePlayerNameUseCase {
     private final PlayerMapper mapper;
 
 
-    public Mono<ResponsePlayerDTO> execute(PlayerId id, PlayerName name) {
+    public Mono<ResponsePlayerDTO> execute(PlayerId id, RequestPlayerDTO name) {
         return playerRepository.findById(id)
                 .switchIfEmpty(Mono.error(new PlayerIdDoesNotExistsInDataBaseException("Player with id " + id + " does not exists in data base")))
                 .map(player -> {
-                    player.changeName(name);
+                    player.changeName(new PlayerName(name.name()));
                     return player;
                 })
                 .flatMap(playerRepository::save)
