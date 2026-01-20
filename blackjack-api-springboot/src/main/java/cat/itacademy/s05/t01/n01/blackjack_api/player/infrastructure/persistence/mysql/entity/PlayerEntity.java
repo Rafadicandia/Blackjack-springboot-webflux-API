@@ -6,8 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.domain.Persistable;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.math.BigDecimal;
@@ -18,36 +17,36 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PlayerEntity implements Persistable<String> {
+public class PlayerEntity {
 
     @Id
     private String id;
+
+    @Column("name")
     private String name;
-    private Integer score;
+
+    @Column("wins")
     private Integer wins;
+
+    @Column("losses")
     private Integer losses;
-    private Double winRate;
+
+    @Column("total_games")
     private Integer totalGames;
+
+    @Column("win_rate")
+    private Double winRate;
+
+    @Column("balance")
     private BigDecimal balance;
+
+    @Column("created_at")
     private LocalDateTime createdAt;
+
+    @Column("updated_at")
     private LocalDateTime updatedAt;
+
+    @Column("deleted_at")
     private LocalDateTime deletedAt;
 
-    @Transient
-    private boolean isNewRecord = false;
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public boolean isNew() {
-        return isNewRecord || id == null;
-    }
-
-    public PlayerEntity asNew() {
-        this.isNewRecord = true;
-        return this;
-    }
 }
