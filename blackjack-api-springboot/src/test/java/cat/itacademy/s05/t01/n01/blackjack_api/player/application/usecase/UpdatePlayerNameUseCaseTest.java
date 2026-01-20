@@ -1,5 +1,6 @@
 package cat.itacademy.s05.t01.n01.blackjack_api.player.application.usecase;
 
+import cat.itacademy.s05.t01.n01.blackjack_api.player.application.dto.RequestPlayerDTO;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.application.dto.ResponsePlayerDTO;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.application.exception.PlayerIdDoesNotExistsInDataBaseException;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.application.mapper.PlayerMapper;
@@ -39,13 +40,14 @@ class UpdatePlayerNameUseCaseTest {
         PlayerId id = PlayerId.create();
         PlayerName newName = new PlayerName("NewName");
         Player existingPlayer = Player.createNew(new PlayerName("OldName"));
+        RequestPlayerDTO newNameDTO = new RequestPlayerDTO("NewName");
 
         ResponsePlayerDTO expectedDTO = new ResponsePlayerDTO(id.value().toString(), "NewName", 0, 0, 0, 0.0, null);
 
         when(playerRepository.findById(id)).thenReturn(Mono.just(existingPlayer));
         when(playerRepository.save(any(Player.class))).thenReturn(Mono.just(existingPlayer));
         when(playerMapper.toResponse(any(Player.class))).thenReturn(expectedDTO);
-        Mono<ResponsePlayerDTO> result = useCase.execute(id, newName);
+        Mono<ResponsePlayerDTO> result = useCase.execute(id, newNameDTO);
 
         StepVerifier.create(result)
                 .expectNextMatches(response -> response.name().equals("NewName")) // Ojo al typo "NewNam"
@@ -60,10 +62,11 @@ class UpdatePlayerNameUseCaseTest {
 
         PlayerId id = new PlayerId(UUID.randomUUID());
         PlayerName newName = new PlayerName("TestName");
+        RequestPlayerDTO newNameDTO = new RequestPlayerDTO("NewName");
 
         when(playerRepository.findById(id)).thenReturn(Mono.empty());
 
-        Mono<ResponsePlayerDTO> result = useCase.execute(id, newName);
+        Mono<ResponsePlayerDTO> result = useCase.execute(id, newNameDTO);
 
         StepVerifier.create(result)
                 .expectErrorMatches(throwable -> throwable instanceof PlayerIdDoesNotExistsInDataBaseException &&
