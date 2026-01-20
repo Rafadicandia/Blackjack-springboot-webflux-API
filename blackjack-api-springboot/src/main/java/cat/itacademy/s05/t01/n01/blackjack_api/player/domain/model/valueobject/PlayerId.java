@@ -15,4 +15,5 @@ public record PlayerId(UUID value) {
     public static PlayerId create() {
         return new PlayerId(UUID.randomUUID());
     }
+
 }
