@@ -23,16 +23,11 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        properties = {
-                "spring.data.mongodb.uri=mongodb://localhost:27017/unused", // Evita que busque el default
-                "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration"
-        }
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 @AutoConfigureWebTestClient
 @Testcontainers
 public class PlayerUpdateNameE2EIT {
-
 
     @Autowired
     private WebTestClient webTestClient;
@@ -67,7 +62,7 @@ public class PlayerUpdateNameE2EIT {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build()
-                .asNew(); // Usamos tu método asNew() que ya funciona
+                ;
 
         repository.save(initialPlayer).block();
 
@@ -75,19 +70,31 @@ public class PlayerUpdateNameE2EIT {
 
         webTestClient.put()
                 .uri("/api/players/{id}/name", playerId)
-                .bodyValue(Map.of("name", newName)) // Asumiendo un DTO con el campo name
+                .bodyValue(Map.of("name", newName))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
                 .jsonPath("$.name").isEqualTo(newName)
                 .jsonPath("$.id").isEqualTo(playerId);
 
-        
+
         StepVerifier.create(repository.findById(playerId))
                 .assertNext(entity -> {
                     assertEquals(newName, entity.getName());
                 })
                 .verifyComplete();
+    }
+
+    @Test
+    @DisplayName("Should return 404 Not Found when player does not exist")
+    void shouldReturn404WhenPlayerNotFound() {
+        String nonExistentId = UUID.randomUUID().toString();
+
+        webTestClient.put()
+                .uri("/api/players/{id}/name", nonExistentId)
+                .bodyValue(Map.of("name", "Some Name"))
+                .exchange()
+                .expectStatus().isNotFound();
     }
 }
 
