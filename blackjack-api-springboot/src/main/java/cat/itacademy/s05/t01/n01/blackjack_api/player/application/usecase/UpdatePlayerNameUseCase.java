@@ -19,7 +19,6 @@ public class UpdatePlayerNameUseCase {
     private final PlayerRepository playerRepository;
     private final PlayerMapper mapper;
 
-
     public Mono<ResponsePlayerDTO> execute(PlayerId id, RequestPlayerDTO name) {
         return playerRepository.findById(id)
                 .switchIfEmpty(Mono.error(new PlayerIdDoesNotExistsInDataBaseException("Player with id " + id + " does not exists in data base")))

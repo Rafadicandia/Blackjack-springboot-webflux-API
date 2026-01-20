@@ -14,7 +14,7 @@ public class PlayerEntityMapper {
 
     public PlayerEntity toEntity(Player player) {
         return PlayerEntity.builder()
-                .id(player.getId() != null ? player.getId().value().toString() : null)
+                .id(player.getId().value().toString())
                 .name(player.getName().value())
                 .wins(player.getTotalWins())
                 .losses(player.getTotalLosses())
@@ -23,8 +23,8 @@ public class PlayerEntityMapper {
                 .balance(player.getBalance())
                 .createdAt(player.getCreatedAt())
                 .updatedAt(player.getUpdatedAt())
-                .build()
-                .asNew();
+                .build();
+
     }
 
     public Player toDomain(PlayerEntity entity) {
@@ -41,5 +41,18 @@ public class PlayerEntityMapper {
                 entity.getBalance()
 
         );
+    }
+
+    public PlayerEntity updateEntity(PlayerEntity existingEntity, Player player) {
+        existingEntity.setName(player.getName().value());
+        existingEntity.setWins(player.getTotalWins());
+        existingEntity.setLosses(player.getTotalLosses());
+        existingEntity.setTotalGames(player.getTotalGames());
+        existingEntity.setWinRate(player.getWinRate());
+        existingEntity.setBalance(player.getBalance());
+        existingEntity.setUpdatedAt(LocalDateTime.now());
+
+        return existingEntity;
+
     }
 }
