@@ -4,6 +4,7 @@ import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.model.Player;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.model.valueobject.PlayerId;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.model.valueobject.PlayerName;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.repository.PlayerRepository;
+import cat.itacademy.s05.t01.n01.blackjack_api.player.infrastructure.persistence.mysql.entity.PlayerEntity;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.infrastructure.persistence.mysql.mapper.PlayerEntityMapper;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.infrastructure.persistence.mysql.repository.MySqlPlayerRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class PlayerRepositoryAdapter implements PlayerRepository {
         if (player.hasId()) {
             return updatePlayer(player);
         } else {
+            player.assignId(PlayerId.create());
             return mySqlRepository.save(mapper.toEntity(player))
                     .map(mapper::toDomain);
         }
@@ -68,8 +70,8 @@ public class PlayerRepositoryAdapter implements PlayerRepository {
     private Mono<Player> updatePlayer(Player player) {
         return mySqlRepository.findById(player.getId().value().toString())
                 .flatMap(existingEntity -> {
-                    Player updatedPlayer = mapper.toDomain(mapper.updateEntity(existingEntity, player));
-                    return mySqlRepository.save(mapper.toEntity(updatedPlayer))
+                    PlayerEntity updatedEntity = mapper.updateEntity(existingEntity, player);
+                    return mySqlRepository.save(updatedEntity)
                             .map(mapper::toDomain);
                 });
     }
