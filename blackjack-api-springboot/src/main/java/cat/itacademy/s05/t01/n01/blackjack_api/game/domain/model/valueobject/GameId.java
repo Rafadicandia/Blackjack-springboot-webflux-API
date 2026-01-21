@@ -14,6 +14,10 @@ public record GameId(UUID value) implements Serializable {
         return new GameId(UUID.randomUUID());
     }
     
+    public static GameId generate() {
+        return create();
+    }
+    
     public static GameId fromString(String id) {
         return new GameId(UUID.fromString(id));
     }
