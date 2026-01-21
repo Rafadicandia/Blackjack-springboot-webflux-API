@@ -59,7 +59,7 @@ public class Game {
     private static GameStatus evaluateInitialBlackjack(Hand player, Hand dealer) {
         if (player.isBlackjack() && dealer.isBlackjack()) return GameStatus.TIE;
         if (player.isBlackjack()) return GameStatus.PLAYER_BLACKJACK;
-        
+
         if (dealer.isBlackjack()) return GameStatus.DEALER_WINS; 
         return GameStatus.IN_PROGRESS;
     }
