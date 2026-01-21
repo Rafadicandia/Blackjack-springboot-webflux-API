@@ -41,6 +41,7 @@ public class Game {
         Hand dealerHand = Hand.empty();
         LocalDateTime now = LocalDateTime.now();
 
+        // Deal initial cards
         for (int i = 0; i < 2; i++) {
             Deck.DrawResult drawP = deck.drawCard();
             playerHand = playerHand.addCard(drawP.card());
@@ -58,7 +59,8 @@ public class Game {
     private static GameStatus evaluateInitialBlackjack(Hand player, Hand dealer) {
         if (player.isBlackjack() && dealer.isBlackjack()) return GameStatus.TIE;
         if (player.isBlackjack()) return GameStatus.PLAYER_BLACKJACK;
-        if (dealer.isBlackjack()) return GameStatus.DEALER_WINS; // Dealer gana si tiene BJ y el jugador no
+        
+        if (dealer.isBlackjack()) return GameStatus.DEALER_WINS; 
         return GameStatus.IN_PROGRESS;
     }
 
@@ -78,8 +80,7 @@ public class Game {
     public void playerStand() {
         validateGameInProgress();
 
-
-        while (dealerHand.shouldDealerHit()) { 
+        while (dealerHand.shouldDealerHit()) {
             Deck.DrawResult draw = deck.drawCard();
             dealerHand = dealerHand.addCard(draw.card());
             deck = draw.remainingDeck();
@@ -105,10 +106,8 @@ public class Game {
     }
 
     private void validateGameInProgress() {
-        if (!status.equals(GameStatus.IN_PROGRESS)) {
+        if (status != GameStatus.IN_PROGRESS) {
             throw new IllegalStateException("Game is not in progress. Current status: " + status);
         }
     }
-
-    // ... Getters ...
 }
