@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.domain.Persistable;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -17,7 +19,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PlayerEntity {
+public class PlayerEntity implements Persistable<String> {
 
     @Id
     private String id;
@@ -48,5 +50,13 @@ public class PlayerEntity {
 
     @Column("deleted_at")
     private LocalDateTime deletedAt;
+
+    @Transient
+    private boolean newPlayer;
+
+    @Override
+    public boolean isNew() {
+        return newPlayer || id == null;
+    }
 
 }
