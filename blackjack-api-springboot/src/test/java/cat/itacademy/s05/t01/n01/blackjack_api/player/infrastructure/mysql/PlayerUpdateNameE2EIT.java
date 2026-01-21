@@ -1,7 +1,10 @@
 package cat.itacademy.s05.t01.n01.blackjack_api.player.infrastructure.mysql;
 
+import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.model.Player;
+import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.model.valueobject.PlayerId;
+import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.model.valueobject.PlayerName;
+import cat.itacademy.s05.t01.n01.blackjack_api.player.infrastructure.persistence.mysql.adapter.PlayerRepositoryAdapter;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.infrastructure.persistence.mysql.entity.PlayerEntity;
-import cat.itacademy.s05.t01.n01.blackjack_api.player.infrastructure.persistence.mysql.repository.MySqlPlayerRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +17,6 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.mysql.MySQLContainer;
 import reactor.test.StepVerifier;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
@@ -33,7 +33,7 @@ public class PlayerUpdateNameE2EIT {
     private WebTestClient webTestClient;
 
     @Autowired
-    private MySqlPlayerRepository repository;
+    private PlayerRepositoryAdapter repository;
 
     @Container
     static MySQLContainer mysql = new MySQLContainer("mysql:8.0")
@@ -52,35 +52,30 @@ public class PlayerUpdateNameE2EIT {
     @DisplayName("Should update player name successfully via HTTP API")
     void shouldUpdatePlayerName() {
 
-        String playerId = UUID.randomUUID().toString();
-        PlayerEntity initialPlayer = PlayerEntity.builder()
-                .id(playerId)
-                .name("Original Name")
-                .balance(BigDecimal.valueOf(100))
-                .wins(0).losses(0).totalGames(0).winRate(0.0)
-                .totalGames(0)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build()
-                ;
+        PlayerName initialName = new PlayerName("Original Name");
+        Player initialPlayer = Player.createNew(initialName);
 
-        repository.save(initialPlayer).block();
 
+        Player savedPlayer = repository.save(initialPlayer).block();
+
+
+        PlayerId realId = savedPlayer.getId();
         String newName = "Updated Name";
 
+
         webTestClient.put()
-                .uri("/api/players/{id}/name", playerId)
+                .uri("/api/players/{id}/name", realId.value())
                 .bodyValue(Map.of("name", newName))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
                 .jsonPath("$.name").isEqualTo(newName)
-                .jsonPath("$.id").isEqualTo(playerId);
+                .jsonPath("$.id").isEqualTo(realId.value().toString());
 
 
-        StepVerifier.create(repository.findById(playerId))
-                .assertNext(entity -> {
-                    assertEquals(newName, entity.getName());
+        StepVerifier.create(repository.findById(savedPlayer.getId()))
+                .assertNext(player -> {
+                    assertEquals(newName, player.getName().value());
                 })
                 .verifyComplete();
     }
@@ -97,4 +92,3 @@ public class PlayerUpdateNameE2EIT {
                 .expectStatus().isNotFound();
     }
 }
-
