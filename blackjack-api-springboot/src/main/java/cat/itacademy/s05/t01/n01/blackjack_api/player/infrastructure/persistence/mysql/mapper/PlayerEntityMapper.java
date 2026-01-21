@@ -23,6 +23,7 @@ public class PlayerEntityMapper {
                 .balance(player.getBalance())
                 .createdAt(player.getCreatedAt())
                 .updatedAt(player.getUpdatedAt())
+                .newPlayer(true)
                 .build();
 
     }
@@ -51,6 +52,7 @@ public class PlayerEntityMapper {
         existingEntity.setWinRate(player.getWinRate());
         existingEntity.setBalance(player.getBalance());
         existingEntity.setUpdatedAt(LocalDateTime.now());
+        existingEntity.setNewPlayer(false);
 
         return existingEntity;
 
