@@ -1,9 +1,11 @@
 package cat.itacademy.s05.t01.n01.blackjack_api.game.domain.model;
 
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
+@Getter
 public class Deck {
     private final List<Card> cards;
 
