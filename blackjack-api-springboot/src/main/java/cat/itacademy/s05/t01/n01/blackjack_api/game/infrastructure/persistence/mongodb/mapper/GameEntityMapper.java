@@ -4,7 +4,9 @@ import cat.itacademy.s05.t01.n01.blackjack_api.game.domain.model.*;
 import cat.itacademy.s05.t01.n01.blackjack_api.game.domain.model.Game;
 import cat.itacademy.s05.t01.n01.blackjack_api.game.domain.model.valueobject.GameId;
 import cat.itacademy.s05.t01.n01.blackjack_api.game.infrastructure.persistence.mongodb.entity.CardEntity;
+import cat.itacademy.s05.t01.n01.blackjack_api.game.infrastructure.persistence.mongodb.entity.DeckEntity;
 import cat.itacademy.s05.t01.n01.blackjack_api.game.infrastructure.persistence.mongodb.entity.GameEntity;
+import cat.itacademy.s05.t01.n01.blackjack_api.game.infrastructure.persistence.mongodb.entity.HandEntity;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.model.valueobject.PlayerId;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.model.valueobject.PlayerName;
 import org.springframework.stereotype.Component;
@@ -23,43 +25,66 @@ public class GameEntityMapper {
                 .playerName(game.getPlayerName().value())
                 .playerHand(mapHandToEntity(game.getPlayerHand()))
                 .dealerHand(mapHandToEntity(game.getDealerHand()))
+                .deck(mapDeckToEntity(game.getDeck()))
                 .status(game.getStatus().name())
+                .createdAt(game.getCreatedAt())
+                .updatedAt(game.getUpdatedAt())
                 .build();
     }
 
-    public Game toDomain(GameEntity entity) {
-        return new Game(
-                new GameId(UUID.fromString(entity.getGameId())),
-                new PlayerId(UUID.fromString(entity.getPlayerId())),
-                new PlayerName(entity.getPlayerName()),
-                mapEntityToHand(entity.getPlayerHand()),
-                mapEntityToHand(entity.getDealerHand()),
-                GameStatus.valueOf(entity.getStatus())
-        );
-    }
-
-    private List<CardEntity> mapHandToEntity(Hand hand) {
-        if (hand == null || hand.getCards() == null) {
-            return List.of();
-        }
-        return hand.getCards().stream()
+    private DeckEntity mapDeckToEntity(Deck deck) {
+        List<CardEntity> cards = deck.getCards().stream()
                 .map(card -> new CardEntity(
                         card.rank().name(),
                         card.suit().name()
                 ))
                 .collect(Collectors.toList());
+        return new DeckEntity(cards);
+
     }
 
-    private Hand mapEntityToHand(List<CardEntity> cardEntities) {
-        if (cardEntities == null) {
-            return new Hand(); // Retorna mano vacía si es null
-        }
-        List<Card> cards = cardEntities.stream()
+    private Deck deckEntityToDeck(DeckEntity deck) {
+
+        
+
+
+    }
+
+    public Game toDomain(GameEntity entity) {
+        return Game.reconstitute(
+                new GameId(UUID.fromString(entity.getGameId())),
+                new PlayerId(UUID.fromString(entity.getPlayerId())),
+                new PlayerName(entity.getPlayerName()),
+                mapEntityToHand(entity.getPlayerHand()),
+                mapEntityToHand(entity.getDealerHand()),
+                deckEntityToDeck(entity.getDeck()),
+                GameStatus.valueOf(entity.getStatus()),
+                entity.getCreatedAt(),
+                entity.getUpdatedAt()
+
+
+        );
+    }
+
+
+
+    private HandEntity mapHandToEntity(Hand hand) {
+        List<CardEntity> cards = hand.getCards().stream()
+                .map(card -> new CardEntity(
+                        card.rank().name(),
+                        card.suit().name()
+                ))
+                .collect(Collectors.toList());
+        return new HandEntity(cards);
+    }
+
+    private Hand mapEntityToHand(HandEntity handEntity) {
+        List<Card> cards = handEntity.getCards().stream()
                 .map(entity -> new Card(
                         Rank.valueOf(entity.getRank()),
                         Suit.valueOf(entity.getSuit())
                 ))
                 .collect(Collectors.toList());
-        return new Hand(cards);
+        return Hand.from(cards);
     }
 }
