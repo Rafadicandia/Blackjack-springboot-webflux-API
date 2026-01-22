@@ -56,6 +56,12 @@ public class Game {
         return new Game(id, playerId, playerName, playerHand, dealerHand, deck, status, now, now);
     }
 
+    public static Game reconstitute (GameId id, PlayerId playerId, PlayerName playerName,
+                                     Hand playerHand, Hand dealerHand, Deck deck,
+                                     GameStatus status, LocalDateTime createdAt, LocalDateTime updatedAt){
+        return new Game(id, playerId, playerName, playerHand, dealerHand, deck, status, createdAt, updatedAt);
+    }
+
     private static GameStatus evaluateInitialBlackjack(Hand player, Hand dealer) {
         if (player.isBlackjack() && dealer.isBlackjack()) return GameStatus.TIE;
         if (player.isBlackjack()) return GameStatus.PLAYER_BLACKJACK;
