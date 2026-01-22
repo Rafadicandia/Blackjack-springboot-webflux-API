@@ -1,7 +1,7 @@
-package cat.itacademy.s05.t01.n01.blackjack_api.player.infrastructure.exception;
+package cat.itacademy.s05.t01.n01.blackjack_api.common.infrastructure.exception;
 
 import cat.itacademy.s05.t01.n01.blackjack_api.player.application.exception.PlayerIdDoesNotExistsInDataBaseException;
-import cat.itacademy.s05.t01.n01.blackjack_api.player.infrastructure.dto.ApiError;
+import cat.itacademy.s05.t01.n01.blackjack_api.common.infrastructure.dto.ApiError;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpRequest;
