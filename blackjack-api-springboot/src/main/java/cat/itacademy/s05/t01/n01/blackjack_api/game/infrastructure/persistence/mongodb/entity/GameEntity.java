@@ -26,6 +26,4 @@ public class GameEntity {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-
-
 }
