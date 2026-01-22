@@ -1,4 +1,4 @@
-package cat.itacademy.s05.t01.n01.blackjack_api.player.infrastructure.dto;
+package cat.itacademy.s05.t01.n01.blackjack_api.common.infrastructure.dto;
 
 import java.time.LocalDateTime;
 
