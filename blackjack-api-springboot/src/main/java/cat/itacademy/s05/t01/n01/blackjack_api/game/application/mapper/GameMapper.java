@@ -14,7 +14,7 @@ public class GameMapper {
     public GameResponseDTO toDTO(Game game) {
         return new GameResponseDTO(
                 game.getId().toString(),
-                game.getPlayerId().toString(),
+                game.getPlayerId().value().toString(),
                 game.getPlayerName().value(),
                 mapHand(game.getPlayerHand().getCards()),
                 mapHand(game.getDealerHand().getCards()),
