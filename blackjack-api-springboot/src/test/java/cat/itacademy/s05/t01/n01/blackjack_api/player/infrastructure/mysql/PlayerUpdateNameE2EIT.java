@@ -1,32 +1,25 @@
 package cat.itacademy.s05.t01.n01.blackjack_api.player.infrastructure.mysql;
 
+import cat.itacademy.s05.t01.n01.blackjack_api.TestcontainersConfiguration;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.model.Player;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.model.valueobject.PlayerId;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.model.valueobject.PlayerName;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.infrastructure.persistence.mysql.adapter.PlayerRepositoryAdapter;
-import cat.itacademy.s05.t01.n01.blackjack_api.player.infrastructure.persistence.mysql.entity.PlayerEntity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.mysql.MySQLContainer;
 import reactor.test.StepVerifier;
+
 import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest(
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
-)
-@AutoConfigureWebTestClient
-@Testcontainers
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Import(TestcontainersConfiguration.class)
 public class PlayerUpdateNameE2EIT {
 
     @Autowired
@@ -34,19 +27,6 @@ public class PlayerUpdateNameE2EIT {
 
     @Autowired
     private PlayerRepositoryAdapter repository;
-
-    @Container
-    static MySQLContainer mysql = new MySQLContainer("mysql:8.0")
-            .withInitScript("schema.sql");
-
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.r2dbc.url", () ->
-                String.format("r2dbc:mysql://%s:%d/%s",
-                        mysql.getHost(), mysql.getFirstMappedPort(), mysql.getDatabaseName()));
-        registry.add("spring.r2dbc.username", mysql::getUsername);
-        registry.add("spring.r2dbc.password", mysql::getPassword);
-    }
 
     @Test
     @DisplayName("Should update player name successfully via HTTP API")
@@ -64,8 +44,8 @@ public class PlayerUpdateNameE2EIT {
 
 
         webTestClient.put()
-                .uri("/api/players/{id}/name", realId.value())
-                .bodyValue(Map.of("name", newName))
+                .uri("/player/{id}", realId.value()) // Corregido según README: /player/{playerId}
+                .bodyValue(newName) // Corregido según README: Body es el nuevo nombre directamente, no un JSON
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
@@ -86,8 +66,8 @@ public class PlayerUpdateNameE2EIT {
         String nonExistentId = UUID.randomUUID().toString();
 
         webTestClient.put()
-                .uri("/api/players/{id}/name", nonExistentId)
-                .bodyValue(Map.of("name", "Some Name"))
+                .uri("/player/{id}", nonExistentId)
+                .bodyValue("Some Name")
                 .exchange()
                 .expectStatus().isNotFound();
     }
