@@ -3,7 +3,7 @@ package cat.itacademy.s05.t01.n01.blackjack_api.game.domain.model.valueobject;
 import java.io.Serializable;
 import java.util.UUID;
 
-public record GameId(UUID value) implements Serializable {
+public record GameId(UUID value) {
     public GameId {
         if (value == null) {
             throw new IllegalArgumentException("Game ID cannot be null");
