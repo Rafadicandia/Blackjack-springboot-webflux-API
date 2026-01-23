@@ -5,6 +5,8 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+
 @Getter
 public class Deck {
     private final List<Card> cards;
@@ -33,5 +35,16 @@ public class Deck {
         return new DrawResult(drawnCard, new Deck(remainingCards));
     }
 
-    public record DrawResult(Card card, Deck remainingDeck) {}
+    public record DrawResult(Card card, Deck remainingDeck) {
+    }
+
+    public static Deck reconstitute(List<Card> cards) {
+        Objects.requireNonNull(cards, "Cards cannot be null");
+        if (cards.isEmpty() || cards.size() % 52 != 0) {
+            throw new IllegalArgumentException(
+                    "Deck size must be a multiple of " + 52 + ", got " + cards.size()
+            );
+        }
+        return new Deck(cards);
+    }
 }
