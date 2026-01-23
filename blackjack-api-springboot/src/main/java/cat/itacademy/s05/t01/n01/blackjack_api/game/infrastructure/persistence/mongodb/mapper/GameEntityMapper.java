@@ -1,7 +1,6 @@
 package cat.itacademy.s05.t01.n01.blackjack_api.game.infrastructure.persistence.mongodb.mapper;
 
 import cat.itacademy.s05.t01.n01.blackjack_api.game.domain.model.*;
-import cat.itacademy.s05.t01.n01.blackjack_api.game.domain.model.Game;
 import cat.itacademy.s05.t01.n01.blackjack_api.game.domain.model.valueobject.GameId;
 import cat.itacademy.s05.t01.n01.blackjack_api.game.infrastructure.persistence.mongodb.entity.CardEntity;
 import cat.itacademy.s05.t01.n01.blackjack_api.game.infrastructure.persistence.mongodb.entity.DeckEntity;
@@ -43,9 +42,18 @@ public class GameEntityMapper {
 
     }
 
-    private Deck deckEntityToDeck(DeckEntity deck) {
+    private Card toCard(CardEntity card) {
+        Rank rank = Rank.valueOf(card.getRank());
+        Suit suit = Suit.valueOf(card.getSuit());
+        return new Card(rank, suit);
+    }
 
-        
+    private Deck deckEntityToDeck(DeckEntity deck) {
+        List<Card> cards = deck.getCards().stream()
+                .map(this::toCard)
+                .collect(Collectors.toList());
+
+        return Deck.reconstitute(cards);
 
 
     }
@@ -65,7 +73,6 @@ public class GameEntityMapper {
 
         );
     }
-
 
 
     private HandEntity mapHandToEntity(Hand hand) {
