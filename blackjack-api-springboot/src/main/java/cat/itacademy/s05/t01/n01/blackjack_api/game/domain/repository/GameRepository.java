@@ -7,4 +7,5 @@ import reactor.core.publisher.Mono;
 public interface GameRepository {
     Mono<Game> save(Game game);
     Mono<Game> findById(GameId id);
+    Mono<Void> delete(GameId id);
 }
