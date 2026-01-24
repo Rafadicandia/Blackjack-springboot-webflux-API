@@ -32,4 +32,9 @@ public class MongoGameRepositoryAdapter implements GameRepository {
         return mongoDbRepository.findById(id.value().toString())
                 .map(gameEntityMapper::toDomain);
     }
+
+    @Override
+    public Mono<Void> delete(GameId id) {
+        return mongoDbRepository.deleteById(id.value().toString());
+    }
 }
