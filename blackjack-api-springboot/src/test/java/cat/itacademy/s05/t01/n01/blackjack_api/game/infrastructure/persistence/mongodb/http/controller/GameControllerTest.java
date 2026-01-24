@@ -5,6 +5,7 @@ import cat.itacademy.s05.t01.n01.blackjack_api.game.application.dto.GameAction;
 import cat.itacademy.s05.t01.n01.blackjack_api.game.application.dto.GameResponseDTO;
 import cat.itacademy.s05.t01.n01.blackjack_api.game.application.dto.PlayGameRequestDTO;
 import cat.itacademy.s05.t01.n01.blackjack_api.game.domain.model.Game;
+import cat.itacademy.s05.t01.n01.blackjack_api.game.domain.model.GameStatus;
 import cat.itacademy.s05.t01.n01.blackjack_api.game.domain.repository.GameRepository;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.model.Player;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.model.valueobject.PlayerId;
@@ -50,6 +51,10 @@ class GameControllerTest {
 
         Game game = Game.createNew(playerId, playerName);
 
+        while (game.getStatus() != GameStatus.IN_PROGRESS) {
+            game = Game.createNew(playerId, playerName);
+        }
+
         gameRepository.save(game).block();
 
         String gameId = game.getId().value().toString();
@@ -85,7 +90,7 @@ class GameControllerTest {
 
     @Test
     void shouldReturnGameDetailsWhenGameExists_shouldReturnOk() {
-        // Arrange
+
         PlayerName playerName = new PlayerName("TestPlayer");
         Player player = Player.createNew(playerName);
         playerRepository.save(player).block();
@@ -95,7 +100,6 @@ class GameControllerTest {
         gameRepository.save(game).block();
         String gameId = game.getId().value().toString();
 
-        // Act
         webTestClient.get().uri("/game/{id}", gameId)
                 .exchange()
                 .expectStatus().isOk()
@@ -110,19 +114,23 @@ class GameControllerTest {
     }
 
     @Test
-    void shouldProcessHitActionAndContinueGame(){
-        //Arrange
+    void shouldProcessHitActionAndContinueGame() {
+
         PlayerName playerName = new PlayerName("TestPlayer");
         Player player = Player.createNew(playerName);
         playerRepository.save(player).block();
         PlayerId playerId = player.getId();
 
         Game game = Game.createNew(playerId, playerName);
+
+        while (game.getStatus() != GameStatus.IN_PROGRESS) {
+            game = Game.createNew(playerId, playerName);
+        }
         gameRepository.save(game).block();
         String gameId = game.getId().value().toString();
 
         PlayGameRequestDTO request = new PlayGameRequestDTO(GameAction.HIT);
-        //Act
+
         webTestClient.post().uri("/game/{id}/play", gameId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
@@ -136,30 +144,28 @@ class GameControllerTest {
                     assertThat(response.status()).isNotNull();
                 });
 
+    }
+
+    @Test
+    void shouldDeleteGameWhenExists_ShouldReturn_204() {
+
+        PlayerName playerName = new PlayerName("TestPlayer");
+        Player player = Player.createNew(playerName);
+        playerRepository.save(player).block();
+        PlayerId playerId = player.getId();
+        Game game = Game.createNew(playerId, playerName);
+        gameRepository.save(game).block();
+        String gameId = game.getId().value().toString();
 
 
+        webTestClient.delete().uri("/game/{id}/delete", gameId)
+                .exchange()
+                .expectStatus().isNoContent();
 
-
-        //Mètode: POST
-        //
-        //Descripció: Realitza una jugada en una partida de Blackjack existent.
-        //
-        //Endpoint: /game/{id}/play
-        //
-        //Paràmetres d'entrada: Identificador únic de la partida (id), dades de la jugada (per exemple, tipus de jugada i quantitat apostada).
-        //
-        //Resposta exitosa: Codi 200 OK amb el resultat de la jugada i l'estat actual de la partida.
-
+        webTestClient.get().uri("/game/{id}", gameId)
+                .exchange()
+                .expectStatus().isNotFound();
     }
 
 
-
-
-
-
-
-
 }
-
-
-
