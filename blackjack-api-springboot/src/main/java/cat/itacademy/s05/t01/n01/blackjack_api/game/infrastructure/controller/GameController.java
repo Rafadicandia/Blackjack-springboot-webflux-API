@@ -2,6 +2,7 @@ package cat.itacademy.s05.t01.n01.blackjack_api.game.infrastructure.controller;
 
 import cat.itacademy.s05.t01.n01.blackjack_api.game.application.dto.GameResponseDTO;
 import cat.itacademy.s05.t01.n01.blackjack_api.game.application.dto.PlayGameRequestDTO;
+import cat.itacademy.s05.t01.n01.blackjack_api.game.application.exception.GameNotFoundException;
 import cat.itacademy.s05.t01.n01.blackjack_api.game.application.usecase.CreateGameUseCase;
 import cat.itacademy.s05.t01.n01.blackjack_api.game.application.usecase.DeleteGameUseCase;
 import cat.itacademy.s05.t01.n01.blackjack_api.game.application.usecase.GetGameUseCase;
@@ -43,8 +44,8 @@ public class GameController {
     @DeleteMapping("/{id}/delete")
     public Mono<ResponseEntity<Void>> deleteGame(@PathVariable String id) {
         return deleteGameUseCase.execute(id)
-                .map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.notFound().build());
+                .then(Mono.just(ResponseEntity.noContent().<Void>build()))
+                .onErrorResume(GameNotFoundException.class, e -> Mono.just(ResponseEntity.notFound().build()));
     }
 
 
