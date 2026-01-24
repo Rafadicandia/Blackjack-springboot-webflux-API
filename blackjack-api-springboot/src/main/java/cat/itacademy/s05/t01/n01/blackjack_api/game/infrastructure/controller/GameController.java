@@ -1,5 +1,6 @@
 package cat.itacademy.s05.t01.n01.blackjack_api.game.infrastructure.controller;
 
+import cat.itacademy.s05.t01.n01.blackjack_api.game.application.dto.CreateGameRequestDTO;
 import cat.itacademy.s05.t01.n01.blackjack_api.game.application.dto.GameResponseDTO;
 import cat.itacademy.s05.t01.n01.blackjack_api.game.application.dto.PlayGameRequestDTO;
 import cat.itacademy.s05.t01.n01.blackjack_api.game.application.exception.GameNotFoundException;
@@ -8,6 +9,7 @@ import cat.itacademy.s05.t01.n01.blackjack_api.game.application.usecase.DeleteGa
 import cat.itacademy.s05.t01.n01.blackjack_api.game.application.usecase.GetGameUseCase;
 import cat.itacademy.s05.t01.n01.blackjack_api.game.application.usecase.PlayGameUseCase;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -22,6 +24,11 @@ public class GameController {
     private final PlayGameUseCase playGameUseCase;
     private final DeleteGameUseCase deleteGameUseCase;
 
+    @PostMapping("/new")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Mono<GameResponseDTO> createGame(@RequestBody CreateGameRequestDTO request) {
+        return createGameUseCase.execute(request);
+    }
 
     @PostMapping("/{id}/play")
     public Mono<ResponseEntity<GameResponseDTO>> playGame(
@@ -47,8 +54,4 @@ public class GameController {
                 .then(Mono.just(ResponseEntity.noContent().<Void>build()))
                 .onErrorResume(GameNotFoundException.class, e -> Mono.just(ResponseEntity.notFound().build()));
     }
-
-
-
-
 }
