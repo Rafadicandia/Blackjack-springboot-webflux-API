@@ -1,5 +1,5 @@
 services:
-  # Servicio de la API de Blackjack
+
   blackjack-api:
     build: .
     container_name: blackjack-api
@@ -14,7 +14,6 @@ services:
     env_file:
       - .env
 
-  # Servicio de la base de datos MongoDB
   mongodb:
     image: mongo:latest
     container_name: blackjack-mongodb
@@ -25,7 +24,7 @@ services:
     environment:
       MONGO_INITDB_DATABASE: ${MONGODB_DATABASE}
 
-  # Servicio de la base de datos MySQL
+
   mysql:
     image: mysql:8.0
     container_name: blackjack-mysql
@@ -35,7 +34,7 @@ services:
     ports:
       - "3307:3306"
     volumes:
-      # Monta el script de inicialización en el directorio correcto del contenedor
+
       - ./init:/docker-entrypoint-initdb.d
       - mysql_data:/var/lib/mysql
 
