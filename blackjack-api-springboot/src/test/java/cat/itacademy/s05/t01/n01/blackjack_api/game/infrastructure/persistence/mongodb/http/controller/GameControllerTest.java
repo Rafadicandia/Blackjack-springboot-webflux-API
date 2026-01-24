@@ -39,31 +39,25 @@ class GameControllerTest {
 
     @BeforeEach
     void setUp() {
-        // Limpiar base de datos antes de cada test si es necesario, 
-        // aunque Testcontainers suele dar una instancia limpia si se reinicia, 
-        // pero en SpringBootTest se suele reutilizar el contexto.
-        // Aquí podríamos borrar datos si tuviéramos un método deleteAll, 
-        // pero por ahora confiaremos en crear IDs únicos.
+
     }
 
     @Test
     void playGame_whenGameExistsAndActionIsValid_returnsOk() {
-        // 1. Crear y guardar un Player y un Game reales en la DB
+
         PlayerName playerName = new PlayerName("Joselito");
         Player player = Player.createNew(playerName);
         playerRepository.save(player).block();
         PlayerId playerId = player.getId();
 
+        Game game = Game.createNew(playerId, playerName);
 
-        Game game = Game.createNew(playerId, new PlayerName("TestPlayer"));
         gameRepository.save(game).block();
-        
+
         String gameId = game.getId().value().toString();
 
-        // 2. Preparar la request
         PlayGameRequestDTO request = new PlayGameRequestDTO(GameAction.HIT);
 
-        // 3. Ejecutar la llamada al endpoint
         webTestClient.post().uri("/game/{id}/play", gameId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
@@ -73,9 +67,7 @@ class GameControllerTest {
                 .value(response -> {
                     assertThat(response.gameId()).isEqualTo(gameId);
                     assertThat(response.playerId()).isEqualTo(playerId.value().toString());
-                    // Verificar que la mano del jugador ha cambiado (ha recibido una carta)
-                    // Al inicio tiene 2 cartas, tras HIT debería tener 3 (si no se pasa de 21 y termina)
-                    // O al menos verificar que no es null
+
                     assertThat(response.playerHand()).isNotNull();
                     assertThat(response.status()).isNotNull();
                 });
