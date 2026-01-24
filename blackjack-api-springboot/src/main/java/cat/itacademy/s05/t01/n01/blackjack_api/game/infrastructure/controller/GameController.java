@@ -29,5 +29,25 @@ public class GameController {
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/{id}")
+    public Mono<ResponseEntity<GameResponseDTO>> getGame(@PathVariable String
+                                                           id) {
+        return getGameUseCase.execute(id)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
+
+
+    //Mètode: GET
+    //
+    //Descripció: Obté els detalls d'una partida específica de Blackjack.
+    //
+    //Endpoint: /game/{id}
+    //
+    //Paràmetres d'entrada: Identificador únic de la partida (id)
+    //
+    //Resposta exitosa: Codi 200 OK amb informació detallada sobre la partida.
+
 
 }
