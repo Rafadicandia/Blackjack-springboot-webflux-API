@@ -109,6 +109,53 @@ class GameControllerTest {
 
     }
 
+    @Test
+    void shouldProcessHitActionAndContinueGame(){
+        //Arrange
+        PlayerName playerName = new PlayerName("TestPlayer");
+        Player player = Player.createNew(playerName);
+        playerRepository.save(player).block();
+        PlayerId playerId = player.getId();
+
+        Game game = Game.createNew(playerId, playerName);
+        gameRepository.save(game).block();
+        String gameId = game.getId().value().toString();
+
+        PlayGameRequestDTO request = new PlayGameRequestDTO(GameAction.HIT);
+        //Act
+        webTestClient.post().uri("/game/{id}/play", gameId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(request)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(GameResponseDTO.class)
+                .value(response -> {
+                    assertThat(response.gameId()).isEqualTo(gameId);
+                    assertThat(response.playerId()).isEqualTo(playerId.value().toString());
+                    assertThat(response.playerHand()).isNotNull();
+                    assertThat(response.status()).isNotNull();
+                });
+
+
+
+
+
+        //Mètode: POST
+        //
+        //Descripció: Realitza una jugada en una partida de Blackjack existent.
+        //
+        //Endpoint: /game/{id}/play
+        //
+        //Paràmetres d'entrada: Identificador únic de la partida (id), dades de la jugada (per exemple, tipus de jugada i quantitat apostada).
+        //
+        //Resposta exitosa: Codi 200 OK amb el resultat de la jugada i l'estat actual de la partida.
+
+    }
+
+
+
+
+
 
 
 
