@@ -1,0 +1,42 @@
+services:
+  # Servicio de la API de Blackjack
+  blackjack-api:
+    build: .
+    container_name: blackjack-api
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/${MONGODB_DATABASE}
+      SPRING_R2DBC_URL: r2dbc:mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE}
+    depends_on:
+      - mongodb
+      - mysql
+    env_file:
+      - .env
+
+  # Servicio de la base de datos MongoDB
+  mongodb:
+    image: mongo:latest
+    container_name: blackjack-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGODB_DATABASE}
+
+  # Servicio de la base de datos MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: blackjack-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    ports:
+      - "3307:3306" # <-- AQUÍ ESTÁ EL CAMBIO
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mongodb_data:
+  mysql_data:
