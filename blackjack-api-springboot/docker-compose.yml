@@ -7,7 +7,7 @@ services:
       - "8080:8080"
     environment:
       SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/${MONGODB_DATABASE}
-      SPRING_R2DBC_URL: r2dbc:mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE}
+      SPRING_R2DBC_URL: r2dbc:mysql://root:${MYSQL_ROOT_PASSWORD}@mysql:3306/${MYSQL_DATABASE}
     depends_on:
       - mongodb
       - mysql
@@ -33,8 +33,10 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
     ports:
-      - "3307:3306" # <-- AQUÍ ESTÁ EL CAMBIO
+      - "3307:3306"
     volumes:
+      # Monta el script de inicialización en el directorio correcto del contenedor
+      - ./init:/docker-entrypoint-initdb.d
       - mysql_data:/var/lib/mysql
 
 volumes:
