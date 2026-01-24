@@ -5,7 +5,6 @@ import cat.itacademy.s05.t01.n01.blackjack_api.game.application.dto.GameAction;
 import cat.itacademy.s05.t01.n01.blackjack_api.game.application.dto.GameResponseDTO;
 import cat.itacademy.s05.t01.n01.blackjack_api.game.application.dto.PlayGameRequestDTO;
 import cat.itacademy.s05.t01.n01.blackjack_api.game.domain.model.Game;
-import cat.itacademy.s05.t01.n01.blackjack_api.game.domain.model.valueobject.GameId;
 import cat.itacademy.s05.t01.n01.blackjack_api.game.domain.repository.GameRepository;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.model.Player;
 import cat.itacademy.s05.t01.n01.blackjack_api.player.domain.model.valueobject.PlayerId;
@@ -18,7 +17,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
@@ -84,4 +82,45 @@ class GameControllerTest {
                 .exchange()
                 .expectStatus().isNotFound();
     }
+
+    @Test
+    void shouldReturnGameDetailsWhenGameExists_shouldReturnOk() {
+        // Arrange
+        PlayerName playerName = new PlayerName("TestPlayer");
+        Player player = Player.createNew(playerName);
+        playerRepository.save(player).block();
+        PlayerId playerId = player.getId();
+
+        Game game = Game.createNew(playerId, playerName);
+        gameRepository.save(game).block();
+        String gameId = game.getId().value().toString();
+
+        // Act
+        webTestClient.get().uri("/game/{id}", gameId)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(GameResponseDTO.class)
+                .value(response -> {
+                    assertThat(response.gameId()).isEqualTo(gameId);
+                    assertThat(response.playerId()).isEqualTo(playerId.value().toString());
+                    assertThat(response.playerHand()).isNotNull();
+                    assertThat(response.status()).isNotNull();
+                });
+
+    }
+
+    //Mètode: GET
+    //
+    //Descripció: Obté els detalls d'una partida específica de Blackjack.
+    //
+    //Endpoint: /game/{id}
+    //
+    //Paràmetres d'entrada: Identificador únic de la partida (id)
+    //
+    //Resposta exitosa: Codi 200 OK amb informació detallada sobre la partida.
+
+
 }
+
+
+
