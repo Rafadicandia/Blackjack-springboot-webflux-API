@@ -44,8 +44,8 @@ public class PlayerUpdateNameE2EIT {
 
 
         webTestClient.put()
-                .uri("/player/{id}", realId.value()) // Corregido según README: /player/{playerId}
-                .bodyValue(newName) // Corregido según README: Body es el nuevo nombre directamente, no un JSON
+                .uri("/player/{id}", realId.value())
+                .bodyValue(newName)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
