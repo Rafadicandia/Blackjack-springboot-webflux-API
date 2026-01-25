@@ -1,4 +1,4 @@
-package cat.itacademy.s05.t01.n01.blackjack_api.game.infrastructure.controller;
+package cat.itacademy.s05.t01.n01.blackjack_api.game.infrastructure.http.controller;
 
 import cat.itacademy.s05.t01.n01.blackjack_api.game.application.dto.CreateGameRequestDTO;
 import cat.itacademy.s05.t01.n01.blackjack_api.game.application.dto.GameResponseDTO;
