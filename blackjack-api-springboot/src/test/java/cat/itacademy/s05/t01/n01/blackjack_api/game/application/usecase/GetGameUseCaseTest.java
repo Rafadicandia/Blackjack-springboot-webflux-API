@@ -35,11 +35,11 @@ class GetGameUseCaseTest {
 
     @Test
     void shouldReturnGameDetailsWhenGameExists() {
-        // Arrange
+
         GameId gameId = GameId.create();
         PlayerId playerId = PlayerId.create();
         Game existingGame = Game.createNew(playerId, new PlayerName("TestPlayer"));
-        // Forzar el ID del juego para que coincida con el gameId del test
+
         try {
             java.lang.reflect.Field idField = Game.class.getDeclaredField("id");
             idField.setAccessible(true);
@@ -54,17 +54,19 @@ class GetGameUseCaseTest {
                 playerId.toString(),
                 "TestPlayer",
                 List.of(),
+                existingGame.getPlayerHand().calculateScore(),
                 List.of(),
+                existingGame.getDealerHand().calculateScore(),
                 GameStatus.IN_PROGRESS
         );
 
         when(gameRepository.findById(any(GameId.class))).thenReturn(Mono.just(existingGame));
         when(gameMapper.toDTO(any(Game.class))).thenReturn(expectedResponse);
 
-        // Act
+
         Mono<GameResponseDTO> result = getGameUseCase.execute(gameId.toString());
 
-        // Assert
+
         StepVerifier.create(result)
                 .expectNext(expectedResponse)
                 .verifyComplete();
@@ -75,20 +77,18 @@ class GetGameUseCaseTest {
 
     @Test
     void shouldReturnEmptyMonoWhenGameDoesNotExist() {
-        // Arrange
+
         GameId gameId = GameId.create();
 
         when(gameRepository.findById(any(GameId.class))).thenReturn(Mono.empty());
 
-        // Act
         Mono<GameResponseDTO> result = getGameUseCase.execute(gameId.toString());
 
-        // Assert
         StepVerifier.create(result)
                 .expectComplete()
                 .verify();
 
         verify(gameRepository).findById(any(GameId.class));
-        verify(gameMapper, never()).toDTO(any(Game.class)); // No se debe llamar al mapper si no hay juego
+        verify(gameMapper, never()).toDTO(any(Game.class));
     }
 }

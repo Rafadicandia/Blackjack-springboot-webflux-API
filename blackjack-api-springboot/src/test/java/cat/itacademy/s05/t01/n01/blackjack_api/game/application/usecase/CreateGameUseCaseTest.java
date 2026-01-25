@@ -62,7 +62,9 @@ class CreateGameUseCaseTest {
                 playerId.toString(),
                 playerNameStr,
                 List.of(),
+                savedGame.getPlayerHand().calculateScore(),
                 List.of(),
+                savedGame.getDealerHand().calculateScore(),
                 GameStatus.IN_PROGRESS
         );
 

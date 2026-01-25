@@ -50,18 +50,16 @@ class PlayGameUseCaseTest {
     @BeforeEach
     void setUp() throws Exception {
         playerId = PlayerId.create();
-        // Creamos el juego. Puede salir con BJ, así que forzaremos el estado después.
+
         game = Game.createNew(playerId, new PlayerName("TestPlayer"));
-        
-        // Forzar estado IN_PROGRESS para asegurar que los tests no fallen por un BJ inicial aleatorio
+
         Field statusField = Game.class.getDeclaredField("status");
         statusField.setAccessible(true);
         statusField.set(game, GameStatus.IN_PROGRESS);
 
         gameId = game.getId();
         player = Player.createNew(new PlayerName("TestPlayer"));
-        
-        // Asignamos el ID al jugador mockeado para que coincida
+
         Field idField = Player.class.getDeclaredField("id");
         idField.setAccessible(true);
         idField.set(player, playerId);
@@ -69,21 +67,25 @@ class PlayGameUseCaseTest {
 
     @Test
     void shouldProcessHitActionAndContinueGame() {
-        // Arrange
+
         PlayGameRequestDTO request = new PlayGameRequestDTO(GameAction.HIT);
         GameResponseDTO responseDTO = new GameResponseDTO(
-                gameId.toString(), playerId.toString(), "TestPlayer", 
-                List.of(), List.of(), GameStatus.IN_PROGRESS
+                gameId.toString(),
+                playerId.toString(),
+                "TestPlayer",
+                List.of(),
+                game.getPlayerHand().calculateScore(),
+                List.of(),
+                game.getDealerHand().calculateScore(),
+                GameStatus.IN_PROGRESS
         );
 
         when(gameRepository.findById(any(GameId.class))).thenReturn(Mono.just(game));
         when(gameRepository.save(any(Game.class))).thenReturn(Mono.just(game));
         when(gameMapper.toDTO(any(Game.class))).thenReturn(responseDTO);
 
-        // Act
         Mono<GameResponseDTO> result = playGameUseCase.execute(gameId.toString(), request);
 
-        // Assert
         StepVerifier.create(result)
                 .expectNext(responseDTO)
                 .verifyComplete();
@@ -94,14 +96,18 @@ class PlayGameUseCaseTest {
 
     @Test
     void shouldProcessStandActionAndFinishGame() {
-        // Arrange
+
         PlayGameRequestDTO request = new PlayGameRequestDTO(GameAction.STAND);
-        // El resultado del stand dependerá de las cartas, pero sabemos que NO será IN_PROGRESS
-        // Mockeamos la respuesta del mapper para que coincida con lo que esperamos en el assert
-        // independientemente del resultado real del juego (Win/Loss/Tie)
+
         GameResponseDTO responseDTO = new GameResponseDTO(
-                gameId.toString(), playerId.toString(), "TestPlayer",
-                List.of(), List.of(), GameStatus.PLAYER_WINS 
+                gameId.toString(),
+                playerId.toString(),
+                "TestPlayer",
+                List.of(),
+                game.getPlayerHand().calculateScore(),
+                List.of(),
+                game.getDealerHand().calculateScore(),
+                GameStatus.PLAYER_WINS
         );
 
         when(gameRepository.findById(any(GameId.class))).thenReturn(Mono.just(game));
@@ -110,10 +116,8 @@ class PlayGameUseCaseTest {
         when(playerRepository.save(any(Player.class))).thenReturn(Mono.just(player));
         when(gameMapper.toDTO(any(Game.class))).thenReturn(responseDTO);
 
-        // Act
         Mono<GameResponseDTO> result = playGameUseCase.execute(gameId.toString(), request);
 
-        // Assert
         StepVerifier.create(result)
                 .expectNext(responseDTO)
                 .verifyComplete();
