@@ -9,6 +9,8 @@ public record GameResponseDTO(
         String playerId,
         String playerName,
         List<String> playerHand,
+        int playerScore,
         List<String> dealerHand,
+        int dealerScore,
         GameStatus status
 ) {}

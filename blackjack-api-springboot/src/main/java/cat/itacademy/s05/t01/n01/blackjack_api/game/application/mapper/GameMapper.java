@@ -17,7 +17,9 @@ public class GameMapper {
                 game.getPlayerId().value().toString(),
                 game.getPlayerName().value(),
                 mapHand(game.getPlayerHand().getCards()),
+                game.getPlayerHand().calculateScore(),
                 mapHand(game.getDealerHand().getCards()),
+                game.getDealerHand().calculateScore(),
                 game.getStatus()
         );
     }
