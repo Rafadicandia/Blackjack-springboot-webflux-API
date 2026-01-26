@@ -1,191 +1,140 @@
-# Blackjack-WebFlux-API
+# Blackjack Reactive API ♠️♥️
 
-Descripció
+A high-performance, non-blocking REST API for a Blackjack game, built with **Java 21** and **Spring Boot WebFlux**.
 
+This project demonstrates a fully reactive stack using **MongoDB** for game state management and **MySQL (R2DBC)** for player profiles and statistics, following **Hexagonal Architecture** (Ports and Adapters) principles.
 
-En aquest exercici pràctic, es crearà una API en Java amb Spring Boot per a un joc de Blackjack. L'API estarà dissenyada per connectar-se i gestionar informació en dues bases de dades diferents: MongoDB i MySQL. El joc de Blackjack s'implementarà amb totes les funcionalitats necessàries per jugar, com la gestió de jugadors, mans de cartes i regles del joc.
+---
 
-Aquesta aplicació haurà de ser provada i documentada adequadament; README.md, Swagger, etc.
+## 🚀 Tech Stack
 
+*   **Language:** Java 21
+*   **Framework:** Spring Boot 3 (WebFlux)
+*   **Databases:**
+    *   **MongoDB** (Reactive): Stores active game sessions and history.
+    *   **MySQL** (R2DBC): Stores player profiles, balances, and rankings.
+*   **Documentation:** OpenAPI 3 (Swagger UI)
+*   **Containerization:** Docker & Docker Compose
+*   **Testing:** JUnit 5, Mockito, Testcontainers (Integration/E2E)
 
-Nivell 1
+---
 
+## 🛠️ Architecture
 
-Implementació Bàsica:
-Desenvolupament d'una aplicació reactiva amb Spring WebFlux
+The project follows **Hexagonal Architecture** to decouple the core domain logic from external dependencies.
 
-Una aplicació purament reactiva inclou l'elecció d'un enfocament reactiu, configuració de MongoDB reactiva, implementació de controladors i serveis reactius.
+*   **Domain:** Contains the core business logic (Entities like `Game`, `Player`, `Hand`) and Repository interfaces. No framework dependencies here.
+*   **Application:** Contains Use Cases (Services) that orchestrate the domain logic.
+*   **Infrastructure:** Contains the implementation of adapters (REST Controllers, Database Persistence, Configuration).
 
+---
 
-Gestió d'Excepcions Global
+## 🐳 Getting Started (Docker)
 
-Implementa un GlobalExceptionHandler per gestionar les excepcions globalment a l'aplicació.
+The easiest way to run the application is using Docker Compose. This will set up the API, MongoDB, and MySQL containers automatically.
 
+### Prerequisites
+*   Docker & Docker Compose installed.
 
-Configuració de Bases de Dades
+### Run the Application
 
-Configura l'aplicació per utilitzar dos esquemes de bases de dades: MySQL i MongoDB.
+1.  Clone the repository.
+2.  Create a `.env` file in the project root (you can copy `.env.example`).
+3.  Navigate to the project root.
+4.  Run the following command:
 
+```bash
+docker-compose up --build
+```
 
-Proves de Controlador i Servei
+This command will:
+1.  Compile the application (using a multi-stage Dockerfile).
+2.  Start MongoDB and MySQL containers.
+3.  Initialize the MySQL database schema automatically.
+4.  Start the Blackjack API on port `8080`.
 
-Implementa proves unitàries per almenys un controlador i un servei utilitzant JUnit i Mockito.
+---
 
+## 📖 API Documentation
 
-Documentació amb Swagger
+Once the application is running, you can access the interactive API documentation (Swagger UI) at:
 
-Utilitza Swagger per generar documentació automàtica de l'API de l'aplicació
+👉 **[http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)**
 
+---
 
-Passos a seguir:
-Disseny de l'API: Defineix els diferents endpoints necessaris per gestionar un joc de Blackjack, incloent-hi la creació de partides, la realització de jugades, etc.
-Connexió a les Bases de Dades: Configura la connexió a MongoDB i MySQL. Crea les entitats necessàries en Java per representar les dades del joc.
-Proves Unitàries: Escriu proves unitàries per a cadascun dels endpoints i funcions principals de l'API utilitzant JUnit i Mockito. Verifica que l'API funcioni correctament i que les operacions a les bases de dades es realitzin de manera esperada. Testa com a mínim un servei i un controlador.
+## 🎮 How to Play (Endpoints)
 
-Endpoints per al joc:
-Crear partida:
+Here is a quick guide to the main flow of the game:
 
-Mètode: POST
+### 1. Create a Game
+Start a new game for a player. If the player doesn't exist, they will be created.
 
-Descripció: Crea una nova partida de Blackjack.
+*   **POST** `/game/new`
+*   **Body:** `{"playerName": "Rafael"}`
+*   **Returns:** `gameId`, `playerId`, and initial cards.
 
-Endpoint: /game/new
+### 2. Play (Hit or Stand)
+Make a move in an active game.
 
-Cos de la sol·licitud (body): Nou nom del jugador.
+*   **POST** `/game/{gameId}/play`
+*   **Body:**
+    *   To Hit: `{"action": "HIT"}`
+    *   To Stand: `{"action": "STAND"}`
 
-Paràmetres d'entrada: Cap
+### 3. Get Ranking
+See the leaderboard sorted by win rate.
 
-Resposta exitosa: Codi 201 Created amb informació sobre la partida creada.
+*   **GET** `/ranking`
 
+### 4. Game Details
+Retrieve the state of a specific game.
 
-Obtenir detalls de partida:
+*   **GET** `/game/{gameId}`
 
-Mètode: GET
+---
 
-Descripció: Obté els detalls d'una partida específica de Blackjack.
+## ⚙️ Configuration
 
-Endpoint: /game/{id}
+The application uses a `.env` file (loaded by Docker Compose) and `application.properties` for configuration.
 
-Paràmetres d'entrada: Identificador únic de la partida (id)
-
-Resposta exitosa: Codi 200 OK amb informació detallada sobre la partida.
-
-
-Realitzar jugada:
-
-Mètode: POST
-
-Descripció: Realitza una jugada en una partida de Blackjack existent.
-
-Endpoint: /game/{id}/play
-
-Paràmetres d'entrada: Identificador únic de la partida (id), dades de la jugada (per exemple, tipus de jugada i quantitat apostada).
-
-Resposta exitosa: Codi 200 OK amb el resultat de la jugada i l'estat actual de la partida.
-
-
-Eliminar partida:
-
-Mètode: DELETE
-
-Descripció: Elimina una partida de Blackjack existent.
-
-Endpoint: /game/{id}/delete
-
-Paràmetres d'entrada: Identificador únic de la partida (id).
-
-Resposta exitosa: Codi 204 No Content si la partida s'elimina correctament.
-
-
-Obtenir rànquing de jugadors:
-
-Mètode: GET
-
-Descripció: Obtén el rànquing dels jugadors basat en el seu rendiment a les partides de Blackjack.
-
-Endpoint: /ranking
-
-Paràmetres d'entrada: Cap
-
-Resposta exitosa: Codi 200 OK amb la llista de jugadors ordenada per la seva posició en el rànquing i la seva puntuació.
-
-
-Canviar nom del jugador:
-
-Mètode: PUT
-
-Descripció: Canvia el nom d'un jugador en una partida de Blackjack existent.
-
-Endpoint: /player/{playerId}
-
-Cos de la sol·licitud (body): Nou nom del jugador.
-
-Paràmetres d'entrada: identificador únic del jugador (playerId).
-
-Resposta exitosa: Codi 200 OK amb informació actualitzada del jugador.
-
-Nivell 2
-
-
-Dockerització de l'Aplicació
-Pas 1: Crear el fitxer Dockerfile a l'arrel del projecte
-
-Pas 2: Crear el fitxer .dockerignore a l'arrel del projecte
-
-Pas 3: Instal·lar Docker i iniciar sessió
-
-Pas 4: Construir la imatge Docker
-
-Pas 5: Executar la imatge Docker
-
-Pas 6: Etiquetar la imatge Docker
-
-Pas 7: Iniciar sessió a Docker Hub
-
-Pas 8: Pujar la imatge a Docker Hub
-
-Pas 9: Provar que la imatge funcioni
-
-Nivell 3
-
-
-Desplegament de l'aplicació
-Pas 1: Iniciar sessió a Render
-
-Pas 2: Crear un nou servei web
-
-Pas 3: Proporcionar l'URL de la imatge de Docker
-
-Pas 4: Provar que l'aplicació funciona en el servei web: Un cop desplegada l'aplicació, obre un navegador web i navega a l'URL proporcionada per Render per verificar que l'aplicació s'executa correctament.
-
-
-Desplegament de l'aplicació amb GitHub
-Pas 1: Preparar el teu Repositori a GitHub
-
-Si encara no tens un repositori a GitHub, crea'l. Pots iniciar un repositori buit o clonar-ne un d'existent.
-Configura el teu Projecte: Assegura't que el teu projecte tingui un Dockerfile que descrigui com construir la imatge Docker per a la teva aplicació.
-Prova Localment: Abans de pujar el teu projecte a GitHub, assegura't que la teva imatge Docker funcioni correctament localment.
-
-Pas 2: Pujar la teva Imatge Docker a GitHub Packages
-
-Etiqueta la teva Imatge Docker: Abans de pujar la teva imatge a GitHub Packages, etiqueta-la amb l'adreça correcta per a GitHub Packages.
-Iniciar Sessió a GitHub Packages
-Pujar la Imatge a GitHub Packages
-
-Pas 3: Configurar GitHub Actions per a Desplegament Automàtic a Render
-
-Crear un Fitxer d'Accions de GitHub: A la carpeta del teu repositori de GitHub, crea un directori .github/workflows si encara no existeix. Després, crea un fitxer YAML dins d'aquest directori per definir el teu flux de treball. Per exemple, crea un fitxer anomenat deploy-to-render.yml.
-Configurar Secrets a GitHub: RENDER_EMAIL: La teva adreça de correu electrònic registrada a Render. RENDER_PASSWORD: La teva contrasenya de Render.
-Provar i Desplegar: Fer un commit a la branca principal del teu repositori hauria d'activar automàticament el flux de treball a GitHub Actions.
-Important
-
-Presta principal atenció als fitxers de configuració i a la ubicació de cadascun d'aquests fitxers.
-
-Recursos
-
-
-
-
-Per realitzar els diferents nivells, recorda que dins l'apartat "Spring Framework Avançat" tens diversos recursos que et serviran de guia.
-
-->Spring Framework Avançat
+### Environment Variables (`.env`)
+Create a `.env` file in the root directory with the following variables. You can use the example values below.
+
+```properties
+# Example .env file
+MYSQL_ROOT_PASSWORD=your_secret_password
+MYSQL_DATABASE=blackjack
+MYSQL_USER=your_user
+MYSQL_PASSWORD=your_secret_password
+MONGODB_DATABASE=blackjack
+```
+
+---
+
+## 🧪 Testing
+
+The project includes Unit Tests and Integration/E2E Tests using **Testcontainers** to ensure database interactions work correctly in a real environment.
+
+To run tests locally (requires Docker):
+
+```bash
+./mvnw test
+```
+
+---
+
+## 📦 Project Structure
+
+```
+src/main/java/cat/itacademy/s05/t01/n01/blackjack_api
+├── common          # Shared configuration (Swagger, Global Exceptions)
+├── game            # Game Bounded Context
+│   ├── application # Use Cases & DTOs
+│   ├── domain      # Game Logic (Aggregates, Value Objects)
+│   └── infrastructure # Controllers & MongoDB Persistence
+└── player          # Player Bounded Context
+    ├── application # Use Cases & DTOs
+    ├── domain      # Player Logic
+    └── infrastructure # Controllers & MySQL Persistence
+```
