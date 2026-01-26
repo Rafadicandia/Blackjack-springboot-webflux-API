@@ -50,7 +50,7 @@ public class PlayerRepositoryAdapter implements PlayerRepository {
 
     @Override
     public Flux<Player> findAll() {
-        return null;
+        return mySqlRepository.findAll().map(mapper::toDomain);
     }
 
     @Override
@@ -72,4 +72,6 @@ public class PlayerRepositoryAdapter implements PlayerRepository {
     public Mono<Void> deleteById(PlayerId id) {
         return null;
     }
+
+
 }

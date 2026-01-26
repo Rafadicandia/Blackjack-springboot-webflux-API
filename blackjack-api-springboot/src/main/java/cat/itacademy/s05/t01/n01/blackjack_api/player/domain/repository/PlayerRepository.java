@@ -22,4 +22,5 @@ public interface PlayerRepository {
     Mono<Long> count();
 
     Mono<Void> deleteById(PlayerId id);
+
 }
