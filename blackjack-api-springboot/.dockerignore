@@ -1,9 +1,85 @@
+# --- Build Output ---
 target/
+build/
+out/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+
+# --- IDEs & Editors ---
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# Eclipse / STS
+.settings/
+.classpath
+.project
+.factorypath
+.springBeans
+.sts4-cache
+bin/
+
+# VS Code
+.vscode/
+
+# NetBeans
+nbproject/
+nbbuild/
+nbdist/
+nbactions.xml
+nb-configuration.xml
+
+# --- Version Control ---
+.git/
+.gitignore
+.gitattributes
+.gitmodules
+
+# --- System Files ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# --- Logs & Temp ---
+*.log
+logs/
+temp/
+tmp/
+
+# --- Secrets & Environment (CRITICAL) ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
+*.jceks
+
+# --- Docker ---
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# --- Maven Wrapper ---
+
 .mvn/
 mvnw
 mvnw.cmd
-.git/
-.idea/
-*.iml
-.DS_Store
+
+# --- Documentation ---
+README.md
 HELP.md
+LICENSE
+*.md
