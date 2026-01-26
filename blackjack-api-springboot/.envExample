@@ -1,0 +1,5 @@
+MYSQL_ROOT_PASSWORD=you_root
+MYSQL_DATABASE=blackjack
+MYSQL_USER=you_root
+MYSQL_PASSWORD=your_root_password
+MONGODB_DATABASE=blackjack
