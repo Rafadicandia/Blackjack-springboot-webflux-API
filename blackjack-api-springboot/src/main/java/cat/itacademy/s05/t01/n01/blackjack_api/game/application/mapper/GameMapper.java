@@ -3,6 +3,8 @@ package cat.itacademy.s05.t01.n01.blackjack_api.game.application.mapper;
 import cat.itacademy.s05.t01.n01.blackjack_api.game.application.dto.GameResponseDTO;
 import cat.itacademy.s05.t01.n01.blackjack_api.game.domain.model.Card;
 import cat.itacademy.s05.t01.n01.blackjack_api.game.domain.model.Game;
+import cat.itacademy.s05.t01.n01.blackjack_api.game.domain.model.GameStatus;
+import cat.itacademy.s05.t01.n01.blackjack_api.game.domain.model.Hand;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -16,17 +18,40 @@ public class GameMapper {
                 game.getId().toString(),
                 game.getPlayerId().value().toString(),
                 game.getPlayerName().value(),
-                mapHand(game.getPlayerHand().getCards()),
+                playerMapHand(game),
                 game.getPlayerHand().calculateScore(),
-                mapHand(game.getDealerHand().getCards()),
-                game.getDealerHand().calculateScore(),
+                dealerMapHand(game),
+                dealerMapScore(game),
                 game.getStatus()
         );
     }
 
-    private List<String> mapHand(List<Card> cards) {
-        return cards.stream()
+    private List<String> playerMapHand(Game game) {
+        return game.getPlayerHand().getCards().stream()
                 .map(Card::toString)
                 .collect(Collectors.toList());
+    }
+
+    private List<String> dealerMapHand(Game game) {
+        if (game.getStatus().equals(GameStatus.IN_PROGRESS)) {
+            List<Card> cards = game.getDealerHand().getCards();
+            return List.of(cards.getFirst().toString(), "HIDDEN");
+
+        }
+        return game.getDealerHand().getCards().stream()
+                .map(Card::toString)
+                .collect(Collectors.toList());
+    }
+
+    private int dealerMapScore(Game game) {
+
+        if (game.getStatus().equals(GameStatus.IN_PROGRESS)) {
+            List<Card> cards = game.getDealerHand().getCards();
+
+            return Hand.from(List.of(cards.getFirst())).calculateScore();
+
+        }
+
+        return game.getDealerHand().calculateScore();
     }
 }
