@@ -4,6 +4,8 @@ A high-performance, non-blocking REST API for a Blackjack game, built with **Jav
 
 This project demonstrates a fully reactive stack using **MongoDB** for game state management and **MySQL (R2DBC)** for player profiles and statistics, following **Hexagonal Architecture** (Ports and Adapters) principles.
 
+🚀 **Live Demo:** [https://blackjack-api-mrxe.onrender.com/](https://blackjack-api-mrxe.onrender.com/)  
+
 ---
 
 ## 🚀 Tech Stack
@@ -11,11 +13,12 @@ This project demonstrates a fully reactive stack using **MongoDB** for game stat
 *   **Language:** Java 21
 *   **Framework:** Spring Boot 3 (WebFlux)
 *   **Databases:**
-    *   **MongoDB** (Reactive): Stores active game sessions and history.
-    *   **MySQL** (R2DBC): Stores player profiles, balances, and rankings.
+    *   **MongoDB Atlas** (Cloud): Managed NoSQL database for active game sessions and history.
+    *   **MySQL** (freesqldatabase.com): Cloud-hosted SQL database for player profiles, balances, and rankings via R2DBC.
 *   **Documentation:** OpenAPI 3 (Swagger UI)
 *   **Containerization:** Docker & Docker Compose
 *   **Testing:** JUnit 5, Mockito, Testcontainers (Integration/E2E)
+*   **Deployment:** Render (Application), MongoDB Atlas (DB), freesqldatabase.com (DB)
 
 ---
 
@@ -29,9 +32,9 @@ The project follows **Hexagonal Architecture** to decouple the core domain logic
 
 ---
 
-## 🐳 Getting Started (Docker)
+## 🐳 Getting Started (Local Development)
 
-The easiest way to run the application is using Docker Compose. This will set up the API, MongoDB, and MySQL containers automatically.
+The easiest way to run the application locally is using Docker Compose.
 
 ### Prerequisites
 *   Docker & Docker Compose installed.
@@ -40,35 +43,28 @@ The easiest way to run the application is using Docker Compose. This will set up
 
 1.  Clone the repository.
 2.  Create a `.env` file in the project root (you can copy `.env.example`).
-3.  Navigate to the project root.
-4.  Run the following command:
+3.  Run the following command:
 
 ```bash
 docker-compose up --build
 ```
 
 This command will:
-1.  Compile the application (using a multi-stage Dockerfile).
+1.  Compile the application.
 2.  Start MongoDB and MySQL containers.
-3.  Initialize the MySQL database schema automatically.
-4.  Start the Blackjack API on port `8080`.
-
----
-
-## 📖 API Documentation
-
-Once the application is running, you can access the interactive API documentation (Swagger UI) at:
-
-👉 **[http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)**
+3.  Initialize the database schema.
+4.  Start the API on port `8080`.
 
 ---
 
 ## 🎮 How to Play (Endpoints)
 
-Here is a quick guide to the main flow of the game:
+You can test these endpoints using the **Swagger UI** link above or via Postman/cURL.
+
+📖 **Swagger UI:** [https://blackjack-api-mrxe.onrender.com/swagger-ui/index.html](https://blackjack-api-mrxe.onrender.com/swagger-ui/index.html)
 
 ### 1. Create a Game
-Start a new game for a player. If the player doesn't exist, they will be created.
+Start a new game for a player.
 
 *   **POST** `/game/new`
 *   **Body:** `{"playerName": "Rafael"}`
@@ -96,10 +92,8 @@ Retrieve the state of a specific game.
 
 ## ⚙️ Configuration
 
-The application uses a `.env` file (loaded by Docker Compose) and `application.properties` for configuration.
-
 ### Environment Variables (`.env`)
-Create a `.env` file in the root directory with the following variables. You can use the example values below.
+For local development, create a `.env` file based on `.env.example`:
 
 ```properties
 # Example .env file
@@ -114,9 +108,7 @@ MONGODB_DATABASE=blackjack
 
 ## 🧪 Testing
 
-The project includes Unit Tests and Integration/E2E Tests using **Testcontainers** to ensure database interactions work correctly in a real environment.
-
-To run tests locally (requires Docker):
+To run tests locally (requires Docker for Testcontainers):
 
 ```bash
 ./mvnw test
