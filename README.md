@@ -4,7 +4,6 @@ A high-performance, non-blocking REST API for a Blackjack game, built with **Jav
 
 This project demonstrates a fully reactive stack using **MongoDB** for game state management and **MySQL (R2DBC)** for player profiles and statistics, following **Hexagonal Architecture** (Ports and Adapters) principles.
 
-
 ---
 
 ## 🚀 Tech Stack
